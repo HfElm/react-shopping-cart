@@ -52,7 +52,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          port: ${{ secrets.SERVER_PORT }}
           script: |
             echo "Pull latest Docker image"
             docker pull hafsa156/react-shopping-cart:latest
@@ -62,5 +62,5 @@ jobs:
             docker rm react-shopping-cart || true
 
             echo "Run new container"
-            docker run -d -p 80:3000 --restart unless-stopped --name react-shopping-cart hafsa156/react-shopping-cart:latest
-###hello
+            docker run -d -p 3000:3000 --restart unless-stopped --name react-shopping-cart hafsa156/react-shopping-cart:latest
+###
