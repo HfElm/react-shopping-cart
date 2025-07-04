@@ -1,0 +1,37 @@
+name: Build and Deploy React App
+
+on:
+  push:
+    branches:
+      - main  # ou "master" selon ton repo
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/react-shopping-cart 
+
+      - name: Push to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/react-shopping-cart
+
+      - name: Deploy on Remote VM via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/react-shopping-cart
+            docker stop react-shopping-cart || true
+            docker rm react-shopping-cart || true
+            docker run -d -p 80:3000 --name react-shopping-cart ${{ secrets.DOCKER_USERNAME }}/react-shopping-cart
