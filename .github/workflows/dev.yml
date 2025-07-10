@@ -41,6 +41,8 @@ jobs:
           push: true
           tags: hafsa156/react-shopping-cart:dev_latest
 
+
+
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
