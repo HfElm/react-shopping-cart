@@ -62,5 +62,5 @@ jobs:
             docker rm react-shopping-cart || true
 
             echo "Run new container"
-            docker run -d -p 3000:3002 --restart unless-stopped --name react-shopping-cart hafsa156/react-shopping-cart:test_latest
+            docker run -d -p 3002:3000 --restart unless-stopped --name react-shopping-cart hafsa156/react-shopping-cart:test_latest
 ###
