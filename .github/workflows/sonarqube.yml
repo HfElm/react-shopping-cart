@@ -1,0 +1,38 @@
+name: SonarQube Analysis
+
+on:
+  push:
+    branches:
+      - main  
+      - dev
+      - test
+
+jobs:
+  sonarqube:
+    name: SonarQube Scanner
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java (required by scanner)
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Download and extract SonarScanner
+        run: |
+          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+          unzip sonar-scanner-cli-*.zip
+          mv sonar-scanner-* sonar-scanner
+
+      - name: Run SonarQube analysis
+        run: |
+          ./sonar-scanner/bin/sonar-scanner \
+            -Dsonar.projectKey=react-shopping-cart \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=http://localhost:9000 \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.branch.name=${{ github.ref_name }}
