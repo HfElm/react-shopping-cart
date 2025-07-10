@@ -3,7 +3,7 @@ name: SonarQube Analysis
 on:
   push:
     branches:
-      - main  
+      - main
       - dev
       - test
 
@@ -22,18 +22,20 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Download and extract SonarScanner
-        run: |
-          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
       - name: Install unzip
-        run: sudo apt-get update && sudo apt-get install -y unzip
-      
-      - name: Unzip sonar-scanner
+        run: sudo apt-get update && sudo apt-get install -y unzip wget
+
+      - name: Download SonarScanner
+        run: wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+
+      - name: Unzip SonarScanner
         run: unzip sonar-scanner-cli-5.0.1.3006-linux.zip
 
-          
-          unzip sonar-scanner-cli-*.zip
-          mv sonar-scanner-* sonar-scanner
+      - name: Rename SonarScanner folder
+        run: mv sonar-scanner-5.0.1.3006-linux sonar-scanner
+
+      - name: List files (optional)
+        run: ls -l sonar-scanner
 
       - name: Run SonarQube analysis
         run: |
