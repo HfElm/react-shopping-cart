@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # Needed for full SonarQube analysis history
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -21,6 +23,17 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: SonarQube Quality Gate Check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Build React App (optional)
         run: npm run build --if-present
@@ -63,4 +76,3 @@ jobs:
 
             echo "Run new container"
             docker run -d -p 3000:3001 --restart unless-stopped --name react-shopping-cart hafsa156/react-shopping-cart:dev_latest
-###
