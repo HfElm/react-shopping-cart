@@ -3,45 +3,24 @@ name: SonarQube Analysis
 on:
   push:
     branches:
-      - main
       - dev
-      - test
 
 jobs:
   sonarqube:
     name: SonarQube Scanner
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # your self-hosted runner with Java and SonarScanner installed
 
     steps:
-      - name: Checkout code
+      - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Set up Java (required by scanner)
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Install unzip
-        run: sudo apt-get update && sudo apt-get install -y unzip wget
-
-      - name: Download SonarScanner
-        run: wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-
-      - name: Unzip SonarScanner
-        run: unzip sonar-scanner-cli-5.0.1.3006-linux.zip
-
-      - name: Rename SonarScanner folder
-        run: mv sonar-scanner-5.0.1.3006-linux sonar-scanner
-
-      - name: List files (optional)
-        run: ls -l sonar-scanner
-
-      - name: Run SonarQube analysis
+      - name: Run SonarQube Analysis
         run: |
-          ./sonar-scanner/bin/sonar-scanner \
+          /home/hafsa/sonar-scanner/bin/sonar-scanner \
             -Dsonar.projectKey=react-shopping-cart \
-            -Dsonar.sources=. \
+            -Dsonar.sources=src \
+            -Dsonar.exclusions=**/node_modules/**,**/*.test.tsx,**/*.test.js \
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
             -Dsonar.host.url=http://localhost:9000 \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.branch.name=${{ github.ref_name }}
